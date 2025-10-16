@@ -16,45 +16,34 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// --- CORS POLICY SETUP START ---
-// Define allowed origins for security. Ensure your frontend URL is listed here 
-// or set in the FRONTEND_URL environment variable.
-const allowedOrigins = [
-  'https://beamish-seahorse-91e250.netlify.app', // Common for Vite/React dev server
-  'https://song-ac7l.onrender.com', // Alternative common dev port
-  process.env.FRONTEND_URL, // Production or staging URL from .env
-].filter(Boolean); // Filters out any undefined/null/empty strings
+// --- MODIFIED CORS POLICY SETUP START ---
+// WARNING: This configuration allows ALL domains to access your API.
+// This is typically only safe for public APIs that don't handle sensitive user data.
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, server-to-server, or same-origin requests)
-    if (!origin) return callback(null, true);
-
-    // Check if the requesting origin is in the allowed list
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.error(`CORS Policy Blocked: ${origin}`);
-      callback(new Error('Not allowed by CORS'), false);
-    }
-  },
-  // Set credentials to true to allow passing authorization headers (JWT) or cookies
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  // FIX: Explicitly allow 'Accept' and the header mentioned in the error.
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'access-control-allow-credentials'],
+const openCorsOptions = {
+    // 🔑 CHANGE: Set origin to the wildcard '*' to allow all domains.
+    origin: '*', 
+    
+    // Credentials must usually be false when origin is set to '*'.
+    credentials: false, 
+    
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    
+    // Ensure the necessary headers for complex requests are allowed.
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    // Note: 'access-control-allow-credentials' is redundant as a header when credentials: false
 };
 
-app.use(cors(corsOptions));
-// --- CORS POLICY SETUP END ---
+app.use(cors(openCorsOptions));
+// --- MODIFIED CORS POLICY SETUP END ---
 
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
 app.use(expressFileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/'
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
 }));
 
 // Route definitions
@@ -63,14 +52,14 @@ app.use('/api/song', songroute)
 app.use('/api/album', album)
 
 cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.API_SECRET_KEY
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.API_SECRET_KEY
 });
 
 // Start the server
 app.listen(PORT, () => {
-  connectDB()
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`Access it at: http://localhost:${PORT}`);
+    connectDB()
+    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`Access it at: http://localhost:${PORT}`);
 });
