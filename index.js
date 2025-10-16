@@ -20,8 +20,8 @@ const PORT = process.env.PORT || 3000;
 // Define allowed origins for security. Ensure your frontend URL is listed here 
 // or set in the FRONTEND_URL environment variable.
 const allowedOrigins = [
-  'http://localhost:5173', // Common for Vite/React dev server
-  'http://localhost:3000', // Alternative common dev port
+  'https://beamish-seahorse-91e250.netlify.app', // Common for Vite/React dev server
+  'https://song-ac7l.onrender.com', // Alternative common dev port
   process.env.FRONTEND_URL, // Production or staging URL from .env
 ].filter(Boolean); // Filters out any undefined/null/empty strings
 
